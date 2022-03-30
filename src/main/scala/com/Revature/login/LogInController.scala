@@ -30,17 +30,17 @@ object LogInController {
   }
 
   def signUp(): Unit = {
-    var username = readLine("Enter username: ")
-    var password = readLine("Enter password: ")
+    var username = readLine("     Enter username: ")
+    var password = readLine("     Enter password: ")
     var rs1 = stmt.executeQuery(s"SELECT * FROM users HAVING username='$username';")
     while (rs1.next()) {
       println(
         """
-          |username is already taken.
-          |choose another username.
+          |     username is already taken.
+          |     choose another username.
           |""".stripMargin)
-      username = readLine("Enter username: ")
-      password = readLine("Enter password: ")
+      username = readLine("     Enter username: ")
+      password = readLine("     Enter password: ")
       rs1 = stmt.executeQuery(s"SELECT * FROM users HAVING username='$username';")
     }
 

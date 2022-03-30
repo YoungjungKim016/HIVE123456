@@ -5,10 +5,6 @@ import org.apache.spark.sql.SparkSession
 import scala.io.StdIn._
 
 object UserAnalyticQuery {
-  def countPG13(spark: SparkSession): Unit = {
-    execQuery(spark,"SELECT count(*) FROM netflixshow WHERE netflixshow.rating = 'PG-13'")
-  }
-
   def searchByAge(spark: SparkSession): Unit = {
     val typeAge = readLine(
       """

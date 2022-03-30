@@ -9,13 +9,9 @@ object HiveDataIns {
 
   def loadCsv(spark: SparkSession, filePath: String): Unit = {
     val tableName = "netflixshow"
-    spark.sql(s"DROP TABLE IF EXISTS ${tableName}")
-    spark.sql(s"CREATE TABLE IF NOT EXISTS ${tableName}" +
-      s"(show_id STRING, Type STRING, Title STRING, Director STRING, Cast STRING, Country STRING, date_added DATE, " +
-      s"Year INT, Rating STRING, duration STRING, Genre STRING, Description STRING) " +
-      s"ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde'" +
-      s"STORED AS textfile")
-    spark.sql(s"LOAD DATA LOCAL INPATH '$filePath' INTO TABLE ${tableName}")
+    spark.sql(s"DROP TABLE IF EXISTS $tableName")
+    spark.sql(s"CREATE TABLE IF NOT EXISTS $tableName(show_id STRING, type STRING, title STRING, director STRING, cast STRING, country STRING, date_added DATE, release_year INT, rating STRING, duration STRING, listed_in STRING, description STRING) ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde' STORED AS textfile")
+    spark.sql(s"LOAD DATA LOCAL INPATH '$filePath' INTO TABLE $tableName")
 
   }
 
@@ -25,20 +21,22 @@ object HiveDataIns {
     spark.sql("set hive.exec.dynamic.partition.mode=nonstrict")
 
     spark.sql(s"DROP TABLE IF EXISTS $adminTablePT")
-    spark.sql(s"CREATE TABLE $adminTablePT(" +
-      s"show_id STRING, title STRING, director STRING, cast STRING, country STRING, " +
-      s"date_added DATE, release_year INT, duration STRING, listed_in STRING, description STRING) " +
-      s"PARTITIONED BY (type STRING, rating STRING) " +
-      s"ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde' STORED AS textfile")
+    spark.sql(s"CREATE TABLE $adminTablePT(show_id STRING, title STRING, director STRING, cast STRING, country STRING, date_added DATE, release_year INT, rating STRING, duration STRING, listed_in STRING, description STRING) PARTITIONED BY (type STRING) ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde' STORED AS textfile")
 
     spark.sql(s"DROP TABLE IF EXISTS $adminTable")
-    spark.sql(s"CREATE TABLE IF NOT EXISTS $adminTable(" +
-      s"show_id STRING, type STRING, title STRING, director STRING, cast STRING, country STRING, " +
-      s"date_added DATE, release_year INT, rating STRING, duration STRING, listed_in STRING, description STRING) " +
-      s"ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde' STORED AS textfile")
-    spark.sql(s"LOAD DATA LOCAL INPATH '$filePath' OVERWRITE INTO TABLE $adminTable")
+    spark.sql(s"CREATE TABLE $adminTable(show_id STRING, type STRING, title STRING, director STRING, cast STRING, country STRING, date_added DATE, release_year INT, rating STRING, duration STRING, listed_in STRING, description STRING) ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde' STORED AS textfile")
+    spark.sql(s"LOAD DATA LOCAL INPATH '$filePath' INTO TABLE $adminTable")
 
-    spark.sql(s"INSERT OVERWRITE TABLE $adminTablePT PARTITION(type, rating) " +
-      s"select show_id, type, title, director, cast, country, date_added, release_year, rating, duration, listed_in, description FROM $adminTable")
+    spark.sql(s"INSERT OVERWRITE TABLE $adminTablePT PARTITION(type) SELECT show_id, type, title, director, cast, country, date_added, release_year, rating, duration, listed_in, description FROM $adminTable")
+    spark.sql(s"SHOW PARTITION $adminTablePT").show()
+
+//    spark.sql(s"DROP TABLE IF EXISTS $adminTablePT")
+//    spark.sql(s"CREATE TABLE $adminTablePT(show_id STRING, title STRING, director STRING, cast STRING, country STRING, date_added DATE, release_year INT, duration STRING, listed_in STRING, description STRING) PARTITIONED BY (type STRING, rating STRING) ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde' STORED AS textfile")
+//
+//    spark.sql(s"DROP TABLE IF EXISTS $adminTable")
+//    spark.sql(s"CREATE TABLE IF NOT EXISTS $adminTable(show_id STRING, type STRING, title STRING, director STRING, cast STRING, country STRING, date_added DATE, release_year INT, rating STRING, duration STRING, listed_in STRING, description STRING) ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde' STORED AS textfile")
+//    spark.sql(s"LOAD DATA LOCAL INPATH '$filePath' OVERWRITE INTO TABLE $adminTable")
+//
+//    spark.sql(s"INSERT OVERWRITE TABLE $adminTablePT PARTITION(type, rating) select show_id, type, title, director, cast, country, date_added, release_year, rating, duration, listed_in, description FROM $adminTable")
   }
 }
