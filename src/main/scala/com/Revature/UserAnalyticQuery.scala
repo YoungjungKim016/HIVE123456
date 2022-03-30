@@ -8,18 +8,18 @@ object UserAnalyticQuery {
   def searchByAge(spark: SparkSession): Unit = {
     val typeAge = readLine(
       """
-        |please choose content rating
-        |(G, PG, PG-13, R, TV-Y, TV-Y7, TV-G, TV-PG, TV-14, TV-MA)
+        |     Please choose content rating
+        |     (G, PG, PG-13, R, TV-Y, TV-Y7, TV-G, TV-PG, TV-14, TV-MA)
         |
-        |option: """.stripMargin)
+        |     Option: """.stripMargin)
     execQuery(spark,s"SELECT type, title, director, cast, country, release_year, rating, duration, listed_in " +
       s"FROM netflixshow WHERE netflixshow.rating = '$typeAge'")
   }
 
   def searchByYear(spark: SparkSession): Unit = {
-    print("please type the year released \nfrom: ")
+    print("     Please type the year released \n     from: ")
     val typeYear1 = readInt()
-    print("to: ")
+    print("     to: ")
     val typeYear2 = readInt()
     execQuery(spark,s"SELECT type, title, director, cast, country, release_year, rating, duration, listed_in " +
       s"FROM netflixshow WHERE netflixshow.release_year BETWEEN '$typeYear1' AND '$typeYear2'")
@@ -28,21 +28,21 @@ object UserAnalyticQuery {
   def searchByGenre(spark: SparkSession): Unit = {
     val typeGenre = readLine(
       """
-        |please choose genre
-        |(Action, Sci-Fi, Comedies, Horror, Children, Dramas, etc...)
+        |     Please choose genre
+        |     (Action, Sci-Fi, Comedies, Horror, Children, Dramas, etc...)
         |
-        |option: """.stripMargin)
+        |     Option: """.stripMargin)
     execQuery(spark,s"SELECT type, title, director, cast, country, release_year, rating, duration, listed_in " +
       s"FROM netflixshow WHERE netflixshow.listed_in LIKE '%$typeGenre%'")
   }
 
   def detailSearch(spark: SparkSession): Unit = {
-    val detailGenre = readLine("choose genre: ")
-    print("type year released \nfrom: ")
+    val detailGenre = readLine("     Choose genre: ")
+    print("     Type year released \n     from: ")
     val detailYear1 = readInt()
-    print("to: ")
+    print("     to: ")
     val detailYear2 = readInt()
-    val detailCountry = readLine("choose country: ")
+    val detailCountry = readLine("     Choose country: ")
     execQuery(spark,s"SELECT type, title, director, cast, country, release_year, rating, duration, listed_in FROM netflixshow " +
       s"WHERE netflixshow.listed_in LIKE '%$detailGenre%' AND " +
       s"netflixshow.release_year BETWEEN '$detailYear1' AND '$detailYear2' AND " +
