@@ -1,10 +1,11 @@
 package com.Revature
 
-import com.Revature.AdminAnalyticQuery.{numAllList, movieVsTv, numCountry, numDirector, showDirector, numCountryByYear}
+import com.Revature.AdminAnalyticQuery.{movieVsTv, numAllList, numCountry, numCountryByYear, numDirector, showDirector}
 import com.Revature.HiveDataIns.{execQuery, loadCsv, loadCsvAdmin}
 import com.Revature.login.LogInController.{adminLogin, logIn, signUp, updatePW}
 import org.apache.spark.sql.SparkSession
 import com.Revature.UserAnalyticQuery.{detailSearch, searchByAge, searchByGenre, searchByYear}
+import org.apache.log4j.{Level, Logger}
 
 import scala.io.StdIn.{readInt, readLine}
 
@@ -43,12 +44,19 @@ object MainConsole {
                 |""".stripMargin)
             System.exit(1)
           }
+          Logger.getLogger("org.apache.spark").setLevel(Level.ERROR)
+          Logger.getLogger("org.spark-project").setLevel(Level.ERROR)
+          Logger.getLogger("org").setLevel(Level.ERROR)
+          Logger.getLogger("akka").setLevel(Level.ERROR)
           val spark: SparkSession = SparkSession
             .builder
             .appName("hello hive")
             .config("spark.master", "local")
+            .config("spark.logConf", "true")
             .enableHiveSupport()
             .getOrCreate()
+          val sc = spark.sparkContext
+          sc.setLogLevel("INFO")
           spark.sparkContext.setLogLevel("ERROR")
           loadCsv(spark, "netflix_titles.csv")
 
@@ -59,10 +67,10 @@ object MainConsole {
                 |
                 |     Welcome!
                 |
-                |     What would you like to do today?
-                |     1: search by content rating     2: search by year
-                |     3: search by genre              4: search detail
-                |     8: update password              9: Sign out
+                |     How do you want to search movie?
+                |     1: Content rating     2: Year
+                |     3: Genre              4: Detail
+                |     8: update password    9: Sign out
                 |""".stripMargin);
 
             print("     Option: ")
