@@ -1,12 +1,14 @@
 package com.Revature
 
 import com.Revature.HiveDataIns.execQuery
-import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.{SaveMode, SparkSession}
 import scala.io.StdIn._
 
 object AdminAnalyticQuery {
   def numAllList(spark: SparkSession): Unit = {
+
     spark.sql("SELECT count(*) FROM datasetShow").show()
+
   }
 
   def movieVsTv(spark: SparkSession): Unit = {
